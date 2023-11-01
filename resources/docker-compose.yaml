@@ -33,14 +33,3 @@ services:
 #      POSTGRES_USER: postgres
 #      POSTGRES_PASSWORD: mypass
 #      POSTGRES_DB: gin_gorm
-
-  postgres-adminer:
-    image: adminer:4.7.7
-    container_name: adminer
-    restart: always
-    ports:
-      - "8080:8080"
-    logging:
-      driver: none
-    depends_on:
-      - postgres

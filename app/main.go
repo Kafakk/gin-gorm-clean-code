@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 	"log"
+	"time"
 )
 
 var (
@@ -12,10 +14,19 @@ var (
 	postgresDBInstance *gorm.DB
 )
 
-func main() {
+type Student struct {
+	Id        int
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Age       int    `json:"age"`
+	Sex       string `json:"sex"`
+	Email     string `json:"email"`
+	CreatedAt time.Time
+}
 
+func main() {
 	// Database
-	//db := connectDB("postgres", "5432", "postgres", "mypass", "gin_gorm")
+	db := connectDB("0.0.0.0", "5432", "postgres", "mypass", "gin_gorm")
 
 	// gin server
 	r := gin.Default()
@@ -24,22 +35,32 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.POST("/students", func(context *gin.Context) {
+	// POST
+	r.POST("/students", func(c *gin.Context) {
+		var createStudent Student
+		c.Bind(&createStudent)
 
+		student := Student{
+			FirstName: createStudent.FirstName,
+			LastName:  createStudent.LastName,
+			Age:       createStudent.Age,
+			Sex:       createStudent.Sex,
+			Email:     createStudent.Email,
+		}
+		db.Create(&student)
+
+		c.JSON(200, student)
+		return
 	})
-	r.GET("/students", func(context *gin.Context) {
+
+	// GET
+	r.GET("/students", func(c *gin.Context) {
 
 	})
 	//PUT
-
 	//DELETE
 	_ = r.Run(":8080") // listen and serve on 0.0.0.0:8080
 }
-
-func create() {}
-func update() {}
-func delete() {}
-func get()    {}
 
 func connectDB(host, port, user, password, dbName string) *gorm.DB {
 	var err error
@@ -53,7 +74,7 @@ func connectDB(host, port, user, password, dbName string) *gorm.DB {
 	if postgresDBInstance == nil {
 		postgresDBInstance, err = gorm.Open("postgres", connection)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		log.Println("database is connected")
 	}
