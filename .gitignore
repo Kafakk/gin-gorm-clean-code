@@ -1,0 +1,16 @@
+vendor
+tmp
+app/tmp
+coverage.out
+.coverage.txt
+resources/docker/postgres/db
+.DS_Store
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+tmp
+.testing
+.testing_file
